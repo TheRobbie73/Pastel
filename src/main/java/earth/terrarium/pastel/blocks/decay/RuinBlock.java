@@ -2,7 +2,7 @@ package earth.terrarium.pastel.blocks.decay;
 
 import com.mojang.serialization.MapCodec;
 import earth.terrarium.pastel.PastelCommon;
-import earth.terrarium.pastel.blocks.DeeperDownPortalBlock;
+import earth.terrarium.pastel.blocks.FissureBlock;
 import earth.terrarium.pastel.particle.effect.ColoredCraftingParticleEffect;
 import earth.terrarium.pastel.registries.PastelBlockTags;
 import earth.terrarium.pastel.registries.PastelBlocks;
@@ -140,7 +140,7 @@ public class RuinBlock extends DecayBlock {
                             PastelBlocks.IMBRIFER_PORTAL
                                 .get()
                                 .defaultBlockState()
-                                .setValue(DeeperDownPortalBlock.FACING_UP, true),
+                                .setValue(FissureBlock.FACING_UP, true),
                             3
                         );
                 } else if (pos.getY() == world.getMinBuildHeight()) {
@@ -150,7 +150,7 @@ public class RuinBlock extends DecayBlock {
                             PastelBlocks.IMBRIFER_PORTAL
                                 .get()
                                 .defaultBlockState()
-                                .setValue(DeeperDownPortalBlock.FACING_UP, false),
+                                .setValue(FissureBlock.FACING_UP, false),
                             3
                         );
                 }
@@ -161,7 +161,7 @@ public class RuinBlock extends DecayBlock {
                         PastelBlocks.IMBRIFER_PORTAL
                             .get()
                             .defaultBlockState()
-                            .setValue(DeeperDownPortalBlock.FACING_UP, false),
+                            .setValue(FissureBlock.FACING_UP, false),
                         3
                     );
             } else if (world.dimension() == PastelLevels.DIMENSION_KEY && pos.getY() == world.getMaxBuildHeight() - 1) { // highest layer cannot be built on
@@ -171,7 +171,7 @@ public class RuinBlock extends DecayBlock {
                         PastelBlocks.IMBRIFER_PORTAL
                             .get()
                             .defaultBlockState()
-                            .setValue(DeeperDownPortalBlock.FACING_UP, true),
+                            .setValue(FissureBlock.FACING_UP, true),
                         3
                     );
             }

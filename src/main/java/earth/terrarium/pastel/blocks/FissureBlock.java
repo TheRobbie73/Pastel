@@ -48,9 +48,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class DeeperDownPortalBlock extends Block {
+public class FissureBlock extends Block {
 
-    public static final MapCodec<DeeperDownPortalBlock> CODEC = simpleCodec(DeeperDownPortalBlock::new);
+    public static final MapCodec<FissureBlock> CODEC = simpleCodec(FissureBlock::new);
 
     private final static ResourceLocation CREATE_PORTAL_ADVANCEMENT_IDENTIFIER = PastelCommon
         .locate(
@@ -65,13 +65,13 @@ public class DeeperDownPortalBlock extends Block {
 
     protected static final VoxelShape SHAPE_UP = Block.box(0.0D, 4D, 0.0D, 16.0D, 16.0D, 16.0D);
 
-    public DeeperDownPortalBlock(Properties settings) {
+    public FissureBlock(Properties settings) {
         super(settings);
         this.registerDefaultState((this.stateDefinition.any()).setValue(FACING_UP, false));
     }
 
     @Override
-    public MapCodec<? extends DeeperDownPortalBlock> codec() {
+    public MapCodec<? extends FissureBlock> codec() {
         return CODEC;
     }
 
@@ -461,7 +461,7 @@ public class DeeperDownPortalBlock extends Block {
         Dist.CLIENT
     )
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
-        if (!state.getValue(DeeperDownPortalBlock.FACING_UP) || random.nextInt(8) == 0) {
+        if (!state.getValue(FissureBlock.FACING_UP) || random.nextInt(8) == 0) {
             spawnVoidFogParticle(world, pos, random);
         }
     }

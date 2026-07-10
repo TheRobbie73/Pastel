@@ -9,7 +9,7 @@ import earth.terrarium.pastel.blocks.BedrockAnvilBlock;
 import earth.terrarium.pastel.blocks.BismuthBudBlock;
 import earth.terrarium.pastel.blocks.BlockWithTooltip;
 import earth.terrarium.pastel.blocks.CrackedEndPortalFrameBlock;
-import earth.terrarium.pastel.blocks.DeeperDownPortalBlock;
+import earth.terrarium.pastel.blocks.FissureBlock;
 import earth.terrarium.pastel.blocks.EnergeticMoteBlock;
 import earth.terrarium.pastel.blocks.PastelLogBlock;
 import earth.terrarium.pastel.blocks.PrimordialFireBlock;
@@ -6521,7 +6521,7 @@ public class PastelBlocks {
     public static final DeferredBlock<Block> IMBRIFER_PORTAL = register(
         block(
             "fissure",
-            () -> new DeeperDownPortalBlock(
+            () -> new FissureBlock(
                 settings(
                     MapColor.COLOR_BLACK,
                     SoundType.EMPTY,

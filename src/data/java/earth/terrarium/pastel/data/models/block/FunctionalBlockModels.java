@@ -2,7 +2,7 @@ package earth.terrarium.pastel.data.models.block;
 
 import earth.terrarium.pastel.PastelCommon;
 import earth.terrarium.pastel.blocks.CrackedEndPortalFrameBlock;
-import earth.terrarium.pastel.blocks.DeeperDownPortalBlock;
+import earth.terrarium.pastel.blocks.FissureBlock;
 import earth.terrarium.pastel.blocks.PrimordialFireBlock;
 import earth.terrarium.pastel.blocks.bottomless_bundle.BottomlessBundleBlock;
 import earth.terrarium.pastel.blocks.decay.DecayBlock;
@@ -415,7 +415,7 @@ public class FunctionalBlockModels {
                     .with(
                         PastelModelHelper
                             .createBooleanModelMap(
-                                DeeperDownPortalBlock.FACING_UP,
+                                FissureBlock.FACING_UP,
                                 ModelLocationUtils
                                     .getModelLocation(
                                         PastelBlocks.IMBRIFER_PORTAL.get(),
