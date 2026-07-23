@@ -2,10 +2,12 @@ package earth.terrarium.pastel.items.magic_items;
 
 import earth.terrarium.pastel.api.energy.InkPowered;
 import earth.terrarium.pastel.api.energy.color.InkColor;
+import earth.terrarium.pastel.api.item.PickBlockAwareItem;
 import earth.terrarium.pastel.compat.claims.GenericClaimModsCompat;
 import earth.terrarium.pastel.components.ExchangingStaffComponent;
 import earth.terrarium.pastel.helpers.interaction.InventoryHelper;
 import earth.terrarium.pastel.helpers.level.BuildingHelper;
+import earth.terrarium.pastel.networking.c2s_payloads.ExchangingStaffAdjustPayload;
 import earth.terrarium.pastel.networking.s2c_payloads.PlayParticleWithRandomOffsetAndVelocityPayload;
 import earth.terrarium.pastel.particle.PastelParticleTypes;
 import earth.terrarium.pastel.registries.PastelDataComponentTypes;
@@ -40,6 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import oshi.util.tuples.Triplet;
 
@@ -47,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExchangeStaffItem extends BuildingStaffItem {
+public class ExchangeStaffItem extends BuildingStaffItem implements PickBlockAwareItem {
 
     public static final int INK_COST_PER_BLOCK = 5;
 
@@ -360,4 +363,10 @@ public class ExchangeStaffItem extends BuildingStaffItem {
             ) || enchantment.is(PastelEnchantments.RESONANCE);
     }
 
+    @Override
+    public void onPickBlock(ItemStack stack) {
+        var component = stack
+            .getOrDefault(PastelDataComponentTypes.EXCHANGING_STAFF, ExchangingStaffComponent.DEFAULT);
+        PacketDistributor.sendToServer(new ExchangingStaffAdjustPayload(component.range()));
+    }
 }

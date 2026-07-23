@@ -1,5 +1,6 @@
 package earth.terrarium.pastel.events;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -7,6 +8,7 @@ import com.mojang.datafixers.util.Either;
 import earth.terrarium.pastel.PastelCommon;
 import earth.terrarium.pastel.api.energy.InkPowered;
 import earth.terrarium.pastel.api.interaction.ItemProvider;
+import earth.terrarium.pastel.api.item.PickBlockAwareItem;
 import earth.terrarium.pastel.api.render.DynamicItemRenderer;
 import earth.terrarium.pastel.attachments.data.MiscPlayerData;
 import earth.terrarium.pastel.attachments.data.PrimordialFireData;
@@ -78,6 +80,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
@@ -125,6 +128,7 @@ public class PastelClientEvents {
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, PastelClientEvents::modifyFog);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, PastelClientEvents::modifyFogColor);
         NeoForge.EVENT_BUS.addListener(PastelClientEvents::handlePickBlock);
+        NeoForge.EVENT_BUS.addListener(PastelClientEvents::handlePickBlockAgain);
 
         // registerCustomItemRenderer(PastelBlocks.BOTTOMLESS_BUNDLE.get().asItem(), BottomlessBundleItem
         // .Renderer::new); TODO unholy
@@ -168,26 +172,26 @@ public class PastelClientEvents {
             .forEach(i -> slotEffect(i, e));
     }
 
-    private static void handlePickBlock(ClientTickEvent.Post event) {
+    private static void handlePickBlock(InputEvent.Key event) {
         var instance = Minecraft.getInstance();
-        if (instance.player == null) return;
-        while (instance.options.keyPickItem.consumeClick()) {
-            var heldItem = instance.player.getItemInHand(InteractionHand.MAIN_HAND);
-            if (heldItem.is(PastelItems.PAINTBRUSH)) {
-                var component = heldItem.getOrDefault(PastelDataComponentTypes.PAINTBRUSH, PaintbrushComponent.DEFAULT);
-                PacketDistributor
-                    .sendToServer(
-                        new PaintbrushModeSwitchPayload(
-                            component
-                                .mode()
-                                .ordinal()
-                        )
-                    );
-            } else if (heldItem.is(PastelItems.EXCHANGING_STAFF)) {
-                var component = heldItem
-                    .getOrDefault(PastelDataComponentTypes.EXCHANGING_STAFF, ExchangingStaffComponent.DEFAULT);
-                PacketDistributor.sendToServer(new ExchangingStaffAdjustPayload(component.range()));
-            }
+        var keyPickItem = instance.options.keyPickItem;
+        if (instance.player == null || !(keyPickItem.key.getType() == InputConstants.Type.KEYSYM) || !keyPickItem
+            .matches(event.getKey(), event.getScanCode())) return;
+        var heldItem = instance.player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (heldItem.getItem() instanceof PickBlockAwareItem item) {
+            item.onPickBlock(heldItem);
+        }
+    }
+
+    private static void handlePickBlockAgain(InputEvent.MouseButton.Pre event) {
+        var instance = Minecraft.getInstance();
+        var keyPickItem = instance.options.keyPickItem;
+        if (instance.player == null || !(keyPickItem.key.getType() == InputConstants.Type.MOUSE) || !keyPickItem
+            .matchesMouse(event.getButton())) return;
+        var heldItem = instance.player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (heldItem.getItem() instanceof PickBlockAwareItem item) {
+            item.onPickBlock(heldItem);
+            event.setCanceled(true);
         }
     }
 

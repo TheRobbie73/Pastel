@@ -9,6 +9,7 @@ import earth.terrarium.pastel.api.energy.InkPowered;
 import earth.terrarium.pastel.api.energy.color.InkColor;
 import earth.terrarium.pastel.api.energy.color.InkColors;
 import earth.terrarium.pastel.api.interaction.EntityColorProcessorRegistry;
+import earth.terrarium.pastel.api.item.PickBlockAwareItem;
 import earth.terrarium.pastel.blocks.TallCropBlock;
 import earth.terrarium.pastel.blocks.decay.DecayAwayBlock;
 import earth.terrarium.pastel.blocks.decay.DecayBlock;
@@ -23,6 +24,7 @@ import earth.terrarium.pastel.helpers.level.BlockVariantHelper;
 import earth.terrarium.pastel.inventories.PaintbrushScreenHandler;
 import earth.terrarium.pastel.items.PigmentItem;
 import earth.terrarium.pastel.items.trinkets.WhispyCircletItem;
+import earth.terrarium.pastel.networking.c2s_payloads.PaintbrushModeSwitchPayload;
 import earth.terrarium.pastel.recipe.cantrip.DegradingRecipe;
 import earth.terrarium.pastel.recipe.cantrip.HealingRecipe;
 import earth.terrarium.pastel.registries.PastelAdvancements;
@@ -79,12 +81,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public class PaintbrushItem extends Item implements SignApplicator {
+public class PaintbrushItem extends Item implements PickBlockAwareItem, SignApplicator {
     public static final int BLOCK_COLOR_COST = 25;
 
     public static final int CANTRIP_COST = 50;
@@ -861,9 +864,9 @@ public class PaintbrushItem extends Item implements SignApplicator {
     @Override
     public boolean tryApplyToSign(Level world, SignBlockEntity signBlockEntity, boolean front, Player player) {
         if (tryUseOnSign(world, signBlockEntity, front, player, player.getItemInHand(InteractionHand.MAIN_HAND)))
-            return true;
+            return false;
         if (tryUseOnSign(world, signBlockEntity, front, player, player.getItemInHand(InteractionHand.OFF_HAND)))
-            return true;
+            return false;
 
         player.playSound(PastelSounds.USE_FAIL, 1.0F, 1.0F);
         return false;
@@ -906,5 +909,18 @@ public class PaintbrushItem extends Item implements SignApplicator {
         }
 
         return false;
+    }
+
+    @Override
+    public void onPickBlock(ItemStack stack) {
+        var component = stack.getOrDefault(PastelDataComponentTypes.PAINTBRUSH, PaintbrushComponent.DEFAULT);
+        PacketDistributor
+            .sendToServer(
+                new PaintbrushModeSwitchPayload(
+                    component
+                        .mode()
+                        .ordinal()
+                )
+            );
     }
 }
